@@ -68,6 +68,15 @@ struct SourceAppsView: View {
 					}
 				}
 			}
+			
+			Divider()
+			
+			Button(.localized("Copy"), systemImage: "doc.on.doc") {
+				UIPasteboard.general.string = object.map {
+					$0.sourceURL!.absoluteString
+				}.joined(separator: "\n")
+				UINotificationFeedbackGenerator().notificationOccurred(.success)
+			}
 		}
 		.toolbar {
 			NBToolbarMenu(
@@ -78,7 +87,6 @@ struct SourceAppsView: View {
 				_sortActions()
 			}
 		}
-		.navigationBarTitleDisplayMode(.inline)
 		.onAppear {
 			if !hasLoadedOnce, viewModel.isFinished {
 				_load()

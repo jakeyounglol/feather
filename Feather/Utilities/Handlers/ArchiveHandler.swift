@@ -8,7 +8,8 @@
 import Foundation
 import UIKit.UIApplication
 import Zip
-import SwiftUICore
+import SwiftUI
+import IDeviceSwift
 
 final class ArchiveHandler: NSObject {
 	@ObservedObject var viewModel: InstallerStatusViewModel
@@ -58,8 +59,6 @@ final class ArchiveHandler: NSObject {
 				password: nil,
 				compression: ZipCompression.allCases[ArchiveHandler.getCompressionLevel()],
 				progress: { progress in
-					print("[\(self._uuid)] Zip progress: \(progress)")
-					
 					Task { @MainActor in
 						self.viewModel.packageProgress = progress
 					}

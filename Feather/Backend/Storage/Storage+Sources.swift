@@ -7,6 +7,8 @@
 
 import CoreData
 import AltSourceKit
+import OSLog
+import UIKit.UIImpactFeedbackGenerator
 
 // MARK: - Class extension: Sources
 extension Storage {
@@ -26,9 +28,11 @@ extension Storage {
 	) {
 		if sourceExists(identifier) {
 			completion(nil)
-			print("ignoring \(identifier)")
+			Logger.misc.debug("ignoring \(identifier)")
 			return
 		}
+		
+		let generator = UIImpactFeedbackGenerator(style: .light)
 		
 		let new = AltSource(context: context)
 		new.name = name
@@ -40,6 +44,7 @@ extension Storage {
 		do {
 			if !deferSave {
 				try context.save()
+				generator.impactOccurred()
 			}
 			completion(nil)
 		} catch {
@@ -70,6 +75,8 @@ extension Storage {
 		repos: [URL: ASRepository],
 		completion: @escaping (Error?) -> Void
 	) {
+		let generator = UIImpactFeedbackGenerator(style: .light)
+		
 		for (url, repo) in repos {
 			addSource(
 				url,
@@ -83,12 +90,9 @@ extension Storage {
 			)
 		}
 		
-		do {
-			try context.save()
-			completion(nil)
-		} catch {
-			completion(error)
-		}
+		saveContext()
+		generator.impactOccurred()
+		completion(nil)
 	}
 
 	func deleteSource(for source: AltSource) {
@@ -104,7 +108,7 @@ extension Storage {
 			let count = try context.count(for: fetchRequest)
 			return count > 0
 		} catch {
-			print("Error checking if repository exists: \(error)")
+			Logger.misc.error("Error checking if repository exists: \(error)")
 			return false
 		}
 	}

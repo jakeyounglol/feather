@@ -9,6 +9,8 @@ import SwiftUI
 import NimbleViews
 import AltSourceKit
 import NimbleJSON
+import OSLog
+import UIKit.UIImpactFeedbackGenerator
 
 // MARK: - View
 struct SourcesAddView: View {
@@ -28,6 +30,7 @@ struct SourcesAddView: View {
 				Section {
 					TextField(.localized("Source Repo URL"), text: $_sourceURL)
 						.keyboardType(.URL)
+						.textInputAutocapitalization(.never)
 				} footer: {
 					Text(.localized("Enter a URL to start validation."))
 				}
@@ -38,13 +41,13 @@ struct SourcesAddView: View {
 						_addCode(UIPasteboard.general.string) {
 							dismiss()
 						}
-						
 					}
 					
-					Button(.localized("Export"), systemImage: "doc.on.clipboard") {
+					Button(.localized("Export"), systemImage: "doc.on.doc") {
 						UIPasteboard.general.string = Storage.shared.getSources().map {
 							$0.sourceURL!.absoluteString
 						}.joined(separator: "\n")
+						UINotificationFeedbackGenerator().notificationOccurred(.success)
 					}
 				} footer: {
 					Text(.localized("Supports importing from KravaSign/MapleSign and ESign"))
@@ -112,7 +115,7 @@ struct SourcesAddView: View {
 											await collector.add(url: url, repository: data)
 										}
 									case .failure(let error):
-										print("Failed to fetch \(url): \(error)")
+										Logger.misc.error("Failed to fetch \(url): \(error)")
 									}
 									continuation.resume()
 								}
@@ -134,4 +137,3 @@ struct SourcesAddView: View {
 		}
 	}
 }
-
