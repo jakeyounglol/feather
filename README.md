@@ -1,3 +1,5 @@
+i just made this fork so i can do github actuons for new commits without waiting for a full release. original readme is below
+
 # Feather
 
 [![GitHub Release](https://img.shields.io/github/v/release/claration/Feather?include_prereleases)](https://github.com/claration/Feather/releases)
